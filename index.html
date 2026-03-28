@@ -1,0 +1,976 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITS Gwalior - Student Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* =========================================
+           1. BASE & THEME VARIABLES
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* --- PORTFOLIO DARK THEME (Default) --- */
+        :root {
+            --bg-color: #111827;
+            --text-color: #f3f4f6;
+            --heading-color: #a855f7;
+            --accent-color: #ec4899;
+            --container-bg: #1f2937;
+            --border-color: #374151;
+            --top-bar-gradient: linear-gradient(90deg, #8b5cf6, #db2777);
+            --header-bg: rgba(17, 24, 39, 0.85);
+            --menu-bg: #171e2b;
+            --th-bg: #8b5cf6;
+            --th-text: #ffffff;
+            --input-bg: #374151;
+            --input-text: #f3f4f6;
+        }
+
+        /* --- LIGHT THEME --- */
+        [data-theme="light"] {
+            --bg-color: #f9fafb;
+            --text-color: #1f2937;
+            --heading-color: #7e22ce;
+            --accent-color: #be185d;
+            --container-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --menu-bg: #f3f4f6;
+            --th-bg: #a855f7;
+            --th-text: white;
+            --input-bg: #ffffff;
+            --input-text: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden; /* Prevent horizontal scroll due to sidebar */
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--heading-color);
+            margin-bottom: 30px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* =========================================
+           2. HEADER & NAVIGATION
+           ========================================= */
+        .top-bar {
+            background: var(--top-bar-gradient);
+            color: white;
+            display: flex;
+            justify-content: flex-end;
+            padding: 8px 25px;
+            gap: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .top-bar a { color: white; text-decoration: none; }
+        .top-bar a:hover { text-decoration: underline; }
+
+        header {
+            background-color: var(--header-bg);
+            backdrop-filter: blur(10px);
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* --- REDEFINED BANNER LENGTH --- */
+        .mits-banner {
+            height: 70px; 
+            width: 1800px; 
+            max-width: 70vw; 
+            object-fit: contain; 
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-grow: 1; 
+        }
+
+        .hamburger {
+            font-size: 30px;
+            cursor: pointer;
+            color: var(--heading-color);
+            transition: color 0.3s;
+        }
+
+        .hamburger:hover { color: var(--accent-color); }
+
+        .theme-btn {
+            background: none;
+            border: 2px solid var(--heading-color);
+            color: var(--heading-color);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            background: var(--heading-color);
+            color: white;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+        }
+
+        /* --- SIDE MENU --- */
+        .side-menu {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--menu-bg);
+            overflow-x: hidden;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-top: 60px;
+            z-index: 2000;
+            border-right: 1px solid var(--border-color);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.3);
+        }
+
+        .side-menu a {
+            display: block;
+            padding: 15px 25px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 18px;
+            border-bottom: 1px solid var(--border-color);
+            transition: 0.3s;
+        }
+
+        .side-menu a:hover {
+            background-color: rgba(168, 85, 247, 0.1);
+            color: var(--heading-color);
+            padding-left: 35px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 36px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .close-btn:hover { color: var(--accent-color); }
+
+        section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
+
+        /* =========================================
+           3. About Section Cards
+           ========================================= */
+        .about-lead {
+            font-size: 18px;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--text-color);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .highlight-text { color: var(--accent-color); font-weight: bold; }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .about-card {
+            background: var(--container-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .about-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--heading-color);
+        }
+
+        .about-card h3 { color: var(--heading-color); margin-bottom: 15px; font-size: 22px; }
+        .about-card p { line-height: 1.6; color: var(--text-color); }
+        .about-card ul { list-style-type: none; padding-left: 0; }
+
+        .about-card ul li {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .about-card ul li::before {
+            content: "▹";
+            color: var(--accent-color);
+            position: absolute;
+            left: 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .full-width-card { grid-column: 1 / -1; }
+
+        @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; } }
+
+        /* =========================================
+           4. Tables & Forms
+           ========================================= */
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--container-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        th, td { padding: 15px; border-bottom: 1px solid var(--border-color); text-align: left; }
+        th { background: var(--th-bg); color: white; font-weight: 600; }
+
+        /* --- VIDEO BACKGROUND WRAPPER --- */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--heading-color);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.9;
+        }
+
+        /* --- COUNSELLING FORM (No Blur overlay) --- */
+        .counselling-card {
+            position: relative;
+            z-index: 1;
+            background: rgba(17, 24, 39, 0.6);
+            padding: 50px;
+        }
+
+        [data-theme="light"] .counselling-card { background: rgba(255, 255, 255, 0.8); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        label { margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-color); }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            background: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--heading-color);
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+        }
+
+        /* --- ANIMATED SUBMIT BUTTON --- */
+        button[type="submit"] {
+            margin-top: 20px;
+            padding: 16px;
+            background: linear-gradient(90deg, #8b5cf6, #db2777, #8b5cf6);
+            background-size: 200% auto;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(219, 39, 119, 0.5);
+            animation: gradientShift 2s linear infinite;
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow: 0 2px 10px rgba(219, 39, 119, 0.4);
+        }
+
+        .btn-loading {
+            opacity: 0.8;
+            pointer-events: none;
+            animation: gradientShift 1s linear infinite !important;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--container-bg);
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        /* =========================================
+           5. Departments & Modal
+           ========================================= */
+        .btn-outline {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: transparent;
+            color: var(--heading-color);
+            border: 2px solid var(--heading-color);
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-outline:hover {
+            background: var(--heading-color);
+            color: white;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+
+        .modal-overlay {
+            display: none; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            padding: 30px;
+            overflow-y: auto; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: translateY(50px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .modal-content::-webkit-scrollbar { width: 8px; }
+        .modal-content::-webkit-scrollbar-track { background: var(--bg-color); border-radius: 8px;}
+        .modal-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 8px;}
+        .modal-content::-webkit-scrollbar-thumb:hover { background: var(--heading-color); }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover { color: var(--accent-color); }
+
+        .highlight-row { background: rgba(168, 85, 247, 0.1); }
+        .working-prof-header {
+            background: var(--bg-color);
+            color: var(--heading-color);
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* =========================================
+           6. Vertical Social Sidebar & Contact Grid
+           ========================================= */
+        .social-sidebar {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 2500;
+        }
+
+        .social-sidebar a {
+            display: flex;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            background: var(--header-bg);
+            backdrop-filter: blur(8px);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 8px 0 0 8px;
+            border: 1px solid var(--border-color);
+            border-right: none;
+            font-size: 22px;
+            box-shadow: -4px 4px 15px rgba(0,0,0,0.3);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, color 0.3s;
+            overflow: hidden;
+        }
+
+        .social-sidebar a i {
+            min-width: 50px;
+            text-align: center;
+            transition: color 0.3s ease; 
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .contact-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-color);
+        }
+
+        .contact-card h4 {
+            color: var(--accent-color);
+            margin-bottom: 12px;
+            font-size: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+        }
+
+        .contact-card p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 5px;
+        }
+
+        .contact-card i {
+            width: 20px;
+            color: var(--heading-color);
+            margin-right: 8px;
+        }
+
+        .contact-card a {
+            color: var(--heading-color);
+            text-decoration: none;
+        }
+
+        .contact-card a:hover {
+            text-decoration: underline;
+        }
+
+        .social-sidebar a.instagram i { color: #E1306C; }
+        .social-sidebar a.youtube i { color: #FF0000; }
+        .social-sidebar a.facebook i { color: #1877F2; }
+        .social-sidebar a.twitter i { color: var(--text-color); } 
+        .social-sidebar a.moodle i { color: #F98012; }
+
+        .social-sidebar a span {
+            font-size: 15px;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .social-sidebar a:hover { width: 140px; }
+        .social-sidebar a:hover span { opacity: 1; }
+
+        .social-sidebar a:hover span,
+        .social-sidebar a:hover i {
+            color: white !important;
+        }
+
+        .social-sidebar a.instagram:hover { background: #E1306C; border-color: #E1306C; }
+        .social-sidebar a.youtube:hover { background: #FF0000; border-color: #FF0000; }
+        .social-sidebar a.facebook:hover { background: #1877F2; border-color: #1877F2; }
+        .social-sidebar a.twitter:hover { background: #000000; border-color: #333; }
+        .social-sidebar a.moodle:hover { background: #F98012; border-color: #F98012; }
+
+        @media (max-width: 600px) {
+            .social-sidebar { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="#">Notification Alerts</a>
+        <a href="#">Recruitment</a>
+        <a href="#">Blog : Insight MITS-DU</a>
+        <a href="#" onclick="openContactModal(); return false;">Contact Us</a>
+    </div>
+    <header>
+        <div class="header-left">
+            <span class="hamburger" onclick="openNav()">☰</span>
+            <img src="mits-banner.png" class="mits-banner" alt="MITS Gwalior Banner">
+        </div>
+        <div>
+            <button onclick="toggleTheme()" class="theme-btn" title="Toggle Light/Dark Mode">🌓</button>
+        </div>
+    </header>
+
+    <div class="social-sidebar">
+        <a href="https://www.instagram.com/mits_gwalior/?hl=en" target="_blank" class="instagram">
+            <i class="fab fa-instagram"></i><span>Instagram</span>
+        </a>
+        <a href="https://www.youtube.com/channel/UCKmCxK6awxsc4sV9PPETwHg/videos" target="_blank" class="youtube">
+            <i class="fab fa-youtube"></i><span>YouTube</span>
+        </a>
+        <a href="https://www.facebook.com/MitsMadhavIstituteOfTechnologyScienceGwalior/" target="_blank" class="facebook">
+            <i class="fab fa-facebook-f"></i><span>Facebook</span>
+        </a>
+        <a href="https://x.com/mitsgwl" target="_blank" class="twitter">
+            <i class="fab fa-x-twitter"></i><span>Twitter (X)</span>
+        </a>
+        <a href="http://moodle.mitsgwalior.in/" target="_blank" class="moodle">
+            <i class="fas fa-graduation-cap"></i><span>Moodle</span>
+        </a>
+    </div>
+
+    <nav id="menu" class="side-menu">
+        <span class="close-btn" onclick="closeNav()">&times;</span>
+        <a href="#home">Home</a>
+        <a href="#about">About Institute</a>
+        <a href="#departments">Departments</a>
+        <a href="#" onclick="openVideoModal(); return false;">Campus Life at MITS</a>
+        <a href="#counselling">Register for Counselling</a>
+        <a href="#" onclick="openContactModal(); return false;">Contact</a>
+    </nav>
+
+    <section id="home">
+        <h2>Welcome to MITS Student Portal</h2>
+    </section>
+
+    <section id="about">
+        <h2>About Institute</h2>
+        <p class="about-lead">
+            Madhav Institute of Technology & Science (MITS), Gwalior — a beacon of technical excellence in Madhya Pradesh since 1957. Now proudly a <span class="highlight-text">Deemed to be University</span>, MITS blends rich royal heritage with cutting-edge innovation to nurture future leaders in engineering, technology, and beyond.
+        </p>
+        <div class="about-grid">
+            <div class="about-card full-width-card">
+                <h3>Our Legacy</h3>
+                <p>Founded by His Highness Sir Jiwaji Rao Scindia under the open door policy of the Government of India, MITS has a storied past intertwined with India's independence era. The foundation stone was laid by <strong>Dr. Rajendra Prasad</strong>, the first President of India, in 1956. The magnificent campus building was inaugurated by <strong>Dr. S. Radhakrishnan</strong> in 1964, and during its Golden Jubilee in 2008, President <strong>Dr. Pratibha Devi Singh Patil</strong> graced the occasion as Chief Guest.</p>
+            </div>
+            <div class="about-card">
+                <h3>Our Vision</h3>
+                <p>To create world-class quality engineers and technocrats capable of providing leadership in all spheres of life and society.</p>
+            </div>
+            <div class="about-card">
+                <h3>Our Mission</h3>
+                <ul>
+                    <li>Provide quality education in technical and allied disciplines.</li>
+                    <li>Organize and promote innovative courses in Engineering and Technology.</li>
+                    <li>Foster research, innovation, and industry collaboration.</li>
+                    <li>Develop ethical professionals who contribute meaningfully to society.</li>
+                </ul>
+            </div>
+            <div class="about-card full-width-card">
+                <h3>Achievements & Excellence</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 15px;">
+                    <div style="flex: 1; min-width: 250px; border-left: 3px solid var(--accent-color); padding-left: 15px;">
+                        <strong style="color: var(--heading-color); font-size: 18px;">NAAC A++ Grade</strong>
+                        <p style="font-size: 14px; margin-top: 5px;">Accredited with a CGPA of 3.53.</p>
+                    </div>
+                    <div style="flex: 1; min-width: 250px; border-left: 3px solid var(--heading-color); padding-left: 15px;">
+                        <strong style="color: var(--heading-color); font-size: 18px;">NBA Accredited</strong>
+                        <p style="font-size: 14px; margin-top: 5px;">Multiple programs recognized by the National Board of Accreditation.</p>
+                    </div>
+                    <div style="flex: 1; min-width: 250px; border-left: 3px solid var(--accent-color); padding-left: 15px;">
+                        <strong style="color: var(--heading-color); font-size: 18px;">Central India Leader</strong>
+                        <p style="font-size: 14px; margin-top: 5px;">Strong emphasis on research, entrepreneurship, and holistic student development.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="departments" style="text-align: center;">
+        <h2>Academic Departments</h2>
+        <p style="margin-bottom: 20px; font-size: 18px;">Explore the diverse range of B.Tech and Architecture programs offered at MITS Gwalior, blending heritage with modern technological education.</p>
+        <button class="btn-outline" onclick="openModal()">View All Programs & Intake</button>
+    </section>
+
+    <div id="deptModal" class="modal-overlay" onclick="closeModalOnOutsideClick(event)">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 style="margin-top: 10px;">Programs Offered</h2>
+            <table>
+                <tr>
+                    <th>Year of Start</th>
+                    <th>Name of Program</th>
+                    <th>Intake</th>
+                </tr>
+                <tr><td>1957</td><td>B.Tech Civil Engineering</td><td>120</td></tr>
+                <tr><td>1957</td><td>B.Tech Mechanical Engineering</td><td>120</td></tr>
+                <tr><td>1957</td><td>B.Tech Electrical Engineering</td><td>120</td></tr>
+                <tr><td>1982</td><td>B.Tech Electronics Engineering</td><td>120</td></tr>
+                <tr><td>1984</td><td>B. Architecture</td><td>40</td></tr>
+                <tr><td>1994</td><td>B.Tech Computer Science & Engineering</td><td>120</td></tr>
+                <tr><td>1996</td><td>B.Tech Chemical Engineering</td><td>60</td></tr>
+                <tr><td>2000</td><td>B.Tech Information Technology</td><td>120</td></tr>
+                <tr><td>2015</td><td>B.Tech Electronics & Telecommunication Engineering</td><td>120</td></tr>
+                <tr><td>2020</td><td>B.Tech Information Technology (Artificial Intelligence and Robotics)</td><td>60</td></tr>
+                <tr><td>2020</td><td>B.Tech Internet of Things (IoT)</td><td>120</td></tr>
+                <tr class="highlight-row"><td>2020</td><td>B.Tech Mathematics and Computing</td><td>120</td></tr>
+                <tr><td>2021</td><td>B.Tech Artificial Intelligence (AI) and Data Science</td><td>60</td></tr>
+                <tr><td>2021</td><td>B.Tech Artificial Intelligence and Machine Learning</td><td>60</td></tr>
+                <tr><td>2021</td><td>B.Tech Computer Science and Design</td><td>120</td></tr>
+                <tr><td>2024</td><td>B.Tech Computer Science & Business Systems</td><td>120</td></tr>
+                <tr><td>2024</td><td>B.Tech Artificial Intelligence (AI)</td><td>120</td></tr>
+                <tr><td>2025</td><td>B.Tech Computer science and Technology</td><td>60</td></tr>
+                <tr><td>2025</td><td>B.Tech Electrical and Computer Engineering</td><td>60</td></tr>
+                <tr><td colspan="3" class="working-prof-header">Courses for Working Professionals (Academic Year 2024-25)</td></tr>
+                <tr><td>2024</td><td>B.Tech Computer Science & Engineering</td><td>60</td></tr>
+                <tr><td>2024</td><td>B.Tech Electronics Engineering</td><td>60</td></tr>
+                <tr><td>2024</td><td>B.Tech Information Technology</td><td>60</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <section id="counselling">
+        <h2>Counselling Registration</h2>
+        <div class="video-container">
+            <video autoplay muted loop playsinline class="bg-video">
+                <source src="https://previews.us-east-1.widencdn.net/seeds/31514831/assets/asset-view/6/e/e/3/6ee3691a-15a5-4f6e-8548-4ccd50f30750/video_1080p/faststart.mp4?response-content-disposition=inline%3B%20filename%3D%22ieee-circuitboard-smart-tech-video.mp4%22&Expires=1774691464&Signature=J1cunl6pgoJe0F9D5TyyUe2IVXTz1WghU23WBhuxAJZ-LYp8weaXsCFzcp7p8wstyWySni888evW4~43yUuxiDRgX98UqcgGh3U42iNfheHjkCgEqBrbHRkBj1X8tGDo4-KOwzJWoeEYWVSCYmVqc6MumqSSLCux7uaCJlLPLBdqvrmwLJN88J6NNIRCIxJKrVeZrOQYS0QzgGuYjHwlTmAM7oqyNDPbYLVh0USfpNyoKHfoISAx75AV~o8ebeXR14qA9PitUbb54pADg7hiSl8ibM21idusDbsJzCoo8pV7NsoFrbYOqZp9i9WLdtswfu5G~06I5ZbZ18RYTSm9wA__&Key-Pair-Id=APKAJD5XONOBVWWOA65A" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="counselling-card">
+                <form action="#" method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="student@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="+91 xxxxx xxxxx" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jee">JEE Main Percentile</label>
+                            <input type="number" step="0.01" id="jee" placeholder="e.g. 95.50" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" required>
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="domicile">Domicile State</label>
+                            <select id="domicile" required>
+                                <option value="" disabled selected>Select State</option>
+                                <option value="mp">Madhya Pradesh (MP)</option>
+                                <option value="other">Other State</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="branch">Preferred Branch</label>
+                            <select id="branch" required>
+                                <option value="" disabled selected>Select Branch</option>
+                                <option value="mnc">Mathematics and Computing</option>
+                                <option value="cse">Computer Science & Engineering</option>
+                                <option value="it">Information Technology</option>
+                                <option value="aiml">Artificial Intelligence & Machine Learning</option>
+                                <option value="ds">Data Science</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit">Submit Registration</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Madhav Institute of Technology & Science, Gwalior</p>
+    </footer>
+
+    <div id="contactModal" class="modal-overlay" onclick="closeContactModalOnOutsideClick(event)">
+        <div class="modal-content" style="max-width: 1000px;">
+            <span class="close-modal" onclick="closeContactModal()">&times;</span>
+            <h2 style="margin-top: 10px;">Get Connected</h2>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h4>Main Campus</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Gola ka Mandir, Gwalior - 474005, MP, India</p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:vicechancellor@mitsgwalior.in">vicechancellor@mitsgwalior.in</a></p>
+                    <p><i class="fas fa-phone"></i> 0751-240-9354, 0751-240-9300</p>
+                    <p style="margin-top: 10px; font-size: 12px; color: #aaa;">*For Director appointments: PA-Ms. Padmavati Naidu (9131405124)</p>
+                </div>
+                <div class="contact-card">
+                    <h4>Admissions & Administration</h4>
+                    <p><strong>Registrar:</strong> Dr. Nikhil Paliwal</p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:registrar@mitsgwalior.in">registrar@mitsgwalior.in</a></p>
+                    <p style="margin-top: 10px;"><strong>Admission Enquiry:</strong></p>
+                    <p>Dr. Manish Dixit & Ms. Jyotsana Singh</p>
+                    <p><i class="fas fa-mobile-alt"></i> 9343250503, 9425460166</p>
+                </div>
+                <div class="contact-card">
+                    <h4>Examinations & Transcripts</h4>
+                    <p><strong>Controller of Exams:</strong> Dr. M.K. Trivedi (9893009680)</p>
+                    <p><strong>Deemed Uni:</strong> Dr. Sulochana Wadhwani (9399766998)</p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:exam@mitsgwalior.in">exam@mitsgwalior.in</a></p>
+                    <p style="margin-top: 10px; font-size: 12px; color: #aaa;">*Transcripts require an application and Rs. 2500/- DD in favour of "Vice Chancellor MITS DU Self Finance".</p>
+                </div>
+                <div class="contact-card">
+                    <h4>Student Support</h4>
+                    <p><strong>Hostel Enquiry:</strong> Dr. Vijay Bhuria (7999464307)</p>
+                    <p><strong>Counselor:</strong> Dr. Sapna Kumari (9051725803)</p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:counsellordrsapna@mitsgwalior.in">Email Counselor</a></p>
+                    <p style="margin-top: 10px;"><strong>Grievance Cell:</strong></p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:sgc@mitsgwalior.in">sgc@mitsgwalior.in</a></p>
+                </div>
+                <div class="contact-card">
+                    <h4>Digital & Placements</h4>
+                    <p><strong>MOODLE/IMS:</strong> Shri. Atul Chauhan</p>
+                    <p><i class="fas fa-phone"></i> 0751-2409304</p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:ims@mitsgwalior.in">ims@mitsgwalior.in</a></p>
+                    <p style="margin-top: 10px;"><strong>Training & Placement:</strong> Mr. Vikram Rajput</p>
+                    <p><i class="fas fa-phone"></i> 0751-2409362, 0751-2409332</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="videoModal" class="modal-overlay" onclick="closeVideoModalOnOutsideClick(event)">
+        <div class="modal-content" style="max-width: 900px; padding: 20px; background: #000; border: 1px solid var(--accent-color);">
+            <span class="close-modal" onclick="closeVideoModal()" style="color: white; right: 20px; top: 10px; z-index: 10;">&times;</span>
+            <h2 style="color: white; margin-top: 5px; margin-bottom: 15px;">Life at MITS</h2>
+            <video id="campusVideo" controls style="width: 100%; border-radius: 8px; outline: none; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);">
+                <source src="mitslife.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.querySelector('.theme-btn');
+            
+            if (html.getAttribute("data-theme") === "light") {
+                html.removeAttribute("data-theme");
+                btn.innerHTML = '🌓';
+            } else {
+                html.setAttribute("data-theme", "light");
+                btn.innerHTML = '☀️';
+            }
+        }
+
+        function openNav() {
+            document.getElementById("menu").style.width = "300px";
+        }
+
+        function closeNav() {
+            document.getElementById("menu").style.width = "0";
+        }
+
+        // --- FORM SUBMISSION ANIMATION ---
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '⚙️ Processing...';
+            submitBtn.classList.add('btn-loading');
+            
+            setTimeout(() => {
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.style.background = '#10b981'; 
+                submitBtn.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.5)';
+                submitBtn.innerHTML = '✅ Application Submitted!';
+                
+                setTimeout(() => {
+                    this.reset();
+                    submitBtn.style.background = ''; 
+                    submitBtn.style.boxShadow = '';
+                    submitBtn.innerHTML = originalText;
+                }, 3000);
+            }, 2000);
+        });
+
+        // --- DEPT MODAL LOGIC ---
+        const modal = document.getElementById('deptModal');
+        const modalContent = modal.querySelector('.modal-content');
+
+        function openModal() {
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modalContent.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.style.opacity = '0';
+            modalContent.style.transform = 'translateY(50px)';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        function closeModalOnOutsideClick(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // --- CONTACT MODAL LOGIC ---
+        const contactModal = document.getElementById('contactModal');
+        const contactModalContent = contactModal.querySelector('.modal-content');
+
+        function openContactModal() {
+            contactModal.style.display = 'flex';
+            closeNav();
+            setTimeout(() => {
+                contactModal.style.opacity = '1';
+                contactModalContent.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function closeContactModal() {
+            contactModal.style.opacity = '0';
+            contactModalContent.style.transform = 'translateY(50px)';
+            setTimeout(() => {
+                contactModal.style.display = 'none';
+            }, 300);
+        }
+
+        function closeContactModalOnOutsideClick(event) {
+            if (event.target === contactModal) {
+                closeContactModal();
+            }
+        }
+
+        // --- VIDEO MODAL LOGIC ---
+        const videoModal = document.getElementById('videoModal');
+        const campusVideo = document.getElementById('campusVideo');
+        const videoModalContent = videoModal.querySelector('.modal-content');
+
+        function openVideoModal() {
+            videoModal.style.display = 'flex';
+            closeNav(); 
+            setTimeout(() => {
+                videoModal.style.opacity = '1';
+                videoModalContent.style.transform = 'translateY(0)';
+                setTimeout(() => {
+                    let playPromise = campusVideo.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("Autoplay prevented by browser. User must click play.");
+                        });
+                    }
+                }, 50);
+            }, 10);
+        }
+
+        function closeVideoModal() {
+            videoModal.style.opacity = '0';
+            videoModalContent.style.transform = 'translateY(50px)';
+            campusVideo.pause();
+            campusVideo.currentTime = 0;
+            setTimeout(() => {
+                videoModal.style.display = 'none';
+            }, 300);
+        }
+
+        function closeVideoModalOnOutsideClick(event) {
+            if (event.target === videoModal) {
+                closeVideoModal();
+            }
+        }
+    </script>
+</body>
+</html>
